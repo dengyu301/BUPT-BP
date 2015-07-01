@@ -40,10 +40,8 @@ Report
 1.	Workplace
 最重要的地方，是我们实际刷题的地方， 里面分成3个部分
 		1.1report: 报告提交的地方。每个人需要在report底下自建一个目录，如report/YuDeng。里面有个template，会存放写报告的某些模板，以供参考。
-		1.2problem: 
-	    每周都会放新的题目进去
-		1.3summary：
-	    这暂时有两个地方，err：是存放错误，尤其常放的错误的地方（大家可以自行进入修改）gen: generalization 的缩写，是存放常用可推广的方法总结的地方
+		1.2problem: 每周都会放新的题目进去
+		1.3summary：这暂时有两个地方，err：是存放错误，尤其常放的错误的地方（大家可以自行进入修改）gen: generalization 的缩写，是存放常用可推广的方法总结的地方
   
 2.	resource
 
