@@ -90,3 +90,203 @@ ListNode* removeNthFromEnd(ListNode* head, int n) {
 }
 
 
+
+
+
+//-------------------------------Question 3 #203 Remove Linked List Elements ---------------------------------//
+
+My idea was simple at first:
+
+1) create two pointers, ListNode *todelete = head; and ListNode *predelete = new ListNode(0);
+        predelete->next = head;
+2) Go through the list, if todelete->val == val, delete the node todelete.
+Here is my code:
+
+class Solution {
+public:
+    ListNode* removeElements(ListNode* head, int val) {
+        if(!head) return NULL;
+        ListNode *todelete = head;
+        ListNode *predelete = new ListNode(0);
+        predelete->next = head;
+        ListNode *res = predelete;
+        while(todelete){
+            if(todelete->val == val){
+                predelete->next = predelete->next->next;
+                todelete = predelete->next;
+            }else{
+            if(todelete) todelete = todelete->next;
+            predelete = predelete->next;
+            }
+        }
+        return res->next;
+    }
+};
+
+
+Then I saw a more concise solution to the problem in discuss section, which is so impressive,
+I have pasted it here:
+
+    ListNode* removeElements(ListNode* head, int val) {
+        if(!head) return NULL;
+        head->next = removeElements(head->next, val);
+        return head->val == val ? head->next : head;
+    }
+    
+My concern is when I am solving the problem, I can only come up with the simple, iterative answer,
+never will I try to think about using recursion. So I think I need to do more work and figure 
+out the connection between recursion and iteration.
+
+
+
+
+//-------------------------------Question 4 #83 Remove Duplicates from Sorted List ---------------------------------//
+
+The idea is using two pointers, one represents the unique value, the other is used to check if there are duplicates.
+
+The code is follows:
+
+    ListNode* deleteDuplicates(ListNode* head) {
+        if(!head) return NULL;
+        ListNode *org = head;
+        ListNode *dup = head->next;
+        while(dup){
+            if(dup->val == org->val){
+                dup = dup->next;
+                org->next = dup;
+            }else{
+                dup = dup->next;
+                org = org->next;
+            }
+        }
+        return head;
+    }
+    
+    
+    
+//-------------------------------Question 5 #21 Merge Two Sorted Lists ---------------------------------//
+
+The idea is like merge two piles of sorted cards, we compare the top card of each pile, we take whichever is smaller and 
+insert it to the bottom of the new pile.
+
+My iterative solution is follows:
+
+
+ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
+        if(l1 == NULL && l2 == NULL){
+            return NULL;
+        }
+        if(l1 == NULL) return l2;
+        if(l2 == NULL) return l1;
+        struct ListNode *t1 = l1;
+        struct ListNode *t2 = l2;
+        struct ListNode *result = NULL;
+        if (t1->val < t2->val) {
+            result = t1;
+        }else{
+            result = t2;
+        }
+        struct ListNode *newNode = new struct ListNode(0);
+        while(t1 != NULL || t2 != NULL){
+            if(t1 == NULL){
+                newNode->next = t2;
+                t2 = t2->next;
+                newNode = newNode->next;  
+            }else if(t2 == NULL){
+                newNode->next = t1;
+                t1 = t1->next;
+                newNode = newNode->next;                
+            }else if(t1->val < t2->val){
+                newNode->next = t1;
+                t1 = t1->next;
+                newNode = newNode->next;
+            }else/* if(t1->val >= t2->val)*/{
+                newNode->next = t2;
+                t2 = t2->next;
+                newNode = newNode->next;
+            }
+        }
+        return result;
+    }
+    
+    
+My code is ugly and long, because I have checked too many redundant conditions, My thought 
+was linear so my code deals with the situations at the beginning, and as I am going through
+the list, I add additional conditions to tackle the new problems, however, I lack the ability 
+to look at this problem in a larger scale, when I look back, most of the conditions can be 
+combined together. Following is an example of a more concise solution:
+
+    ListNode* mergeTwoLists(ListNode* n1, ListNode* n2){
+        if(!n1) return n2;
+        if(!n2) return n1;
+        if(n1->val <= n2->val){
+            n1->next = mergeLists(n1->next, n2);
+            return n1;
+        }
+        if(n1->val > n2->val){
+            n2->next = mergeLists(n1, n2->next);
+            return n2;
+        }
+
+
+After comparing these two solutions, here is what is my conclusion:
+
+Most of the linked list questions can be solved by both iterative and recursive ways, 
+and recursion can always lead to a concise code.
+
+
+
+  
+//-------------------------------Question 6 #160 Intersection of Two Linked Lists ---------------------------------//  
+
+Well, there is a really tricky solution to the problem.
+
+The essence of this problem is the sum of the length of two branches plus the length of the stem(我这里也不知道用stem对不对...但是不知道别的更好地表示方法，求指教。。)
+is a constant, so any node that goes through the whole list will definitely end up meeting at the intersection.
+
+The code is follows:
+
+    ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) {
+        if(!headA || !headB) return NULL;
+        ListNode *pa = headA, *pb = headB;
+        while(pa && pb && pa != pb){
+            pa = pa->next;
+            pb = pb->next;
+            if(pa == pb) return pa;
+            if(!pa) pa = headB;
+            if(!pb) pb = headA;
+        }
+        return pa;
+    }
+
+For this kind of tricky problems, we'd better remember their solutions. 
+    
+//-------------------------------Question 7 #2 Add Two Numbers ---------------------------------//
+
+This problem is the same as Cracking the Coding Interview 2.4.
+
+This is a straight forward problem, just pay attention to the end of the list, if the carry is
+1, we need to add an additional node the storage it.
+
+ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
+        ListNode *startNode = new ListNode(0);
+        ListNode *start = startNode;
+        int addon = 0;
+        while(l1 || l2 || addon){
+            ListNode *newNode = new ListNode(0);
+            startNode->next = newNode;
+            startNode = startNode->next;
+            int sum = (l1 ? l1->val : 0) + (l2 ? l2->val : 0) + addon;
+            addon = sum / 10;
+            startNode->val = sum % 10;
+            l1 = l1 ? l1->next : NULL;
+            l2 = l2 ? l2->next : NULL;
+        }
+        return start->next;
+    }
+    
+    
+//-------------------------------Question 8 #24 Swap Nodes in Pairs ---------------------------------//
+
+
+
