@@ -59,3 +59,34 @@ What do you think?
 
 //-------------------------------Question 2 #19 Remove Nth Node From End of List ---------------------------------//
 
+This problem is similar to the problem in Cracking the Coding Interview 2.2.
+
+Algorithm:
+
+1) Create two pointers, index1, pointing to the beginning of the node and pre, whose next
+   is the head.
+2) Increment index1 by n positions, to make it point to the nth node from the beginning.
+3) Check for index1 != NULL if no increment index and pre, if yes, pre is the (n + 1)th node
+   to the end.
+4) Remove nth node from the end by using pre->next = pre->next->next;
+
+The code is follows:
+   
+ListNode* removeNthFromEnd(ListNode* head, int n) {
+    ListNode *index1 = head;
+    ListNode *pre = new ListNode(0);
+    ListNode *res = pre;
+    pre->next = head;
+    for(int i = 0; i < n; i++){
+        if(index1 == NULL) return NULL;
+        index1 = index1->next;
+    }
+    while(index1){
+        index1 = index1->next;
+        pre = pre->next;
+    }
+    pre->next = pre->next->next;
+    return res->next;
+}
+
+
