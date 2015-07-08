@@ -288,6 +288,144 @@ ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
     
 //-------------------------------Question 8 #24 Swap Nodes in Pairs ---------------------------------//
 
-My idea is simple:
-1)  
+My idea was simple:
+1)  Create two pointers: ListNode *a = head, *b = a->next;
+2)  Both pointers a and b travel through the list and check if b->next exists.
+3)  If b->next != NULL, assign two other pointers pointing at the nodes indicated by a and b ListNode *c = a, *d = b; 
+	and then a = b->next; b = b->next->next; 
+4)  Now if b != NULL, which means there is one more pair can be swapped, so we point c->next to b,
+	and swap the direction of nodes between c and d.
+5)  If b == NULL, which means we have reached the end of the list, we just simply point c->next to a,
+	and no more swap is needed.
+	
+My code is following:
 
+ListNode* swapPairs(ListNode* head) {
+        if(!head) return NULL;
+        ListNode *a = head, *b = a->next;
+        if(!b) return a;
+        ListNode *res = b;
+        while(b){
+            if(b->next){
+                ListNode *c = a, *d = b;
+                a = b->next;
+                b = b->next->next;
+                if(b) {
+                    c->next = b;
+                }else{
+                    c->next = a;
+                }
+                d->next = c;
+            }else{
+                a->next = NULL;
+                b->next = a;
+                break;
+            }
+        }
+        return res;
+    }
+    
+    
+
+Then in discuss section, I saw a concise recursive solution: 
+
+
+ListNode* swapPairs(ListNode* head) {
+        if (head == NULL || head->next == NULL) return head;
+        ListNode *grandChild = swapPairs(head->next->next);
+        ListNode *child = head->next;
+        child->next = head;
+        head->next = grandChild;
+        return child;
+    }
+
+And I was like: What?????!!!!! How the hell could somebody think of the idea!!! I wanna cry T_T
+
+
+
+
+//-------------------------------Question 9 #61 Rotate List ---------------------------------//
+
+I noticed that the result of the rotation is like the swap of the two parts of the list, and 
+I just need to find out where to chop the list.
+
+For example: 
+
+1->2->3->4->5->NULL and k = 2,
+The result is swap the last two nodes 4 and 5 to the front, which is:
+4->5->1->2->3->NULL
+And for this list, when k = 7, the result is the same 4->5->1->2->3->NULL,
+so the problems is quite like Question 2 #19 Remove Nth Node From End of List,
+When I find the kth node to the end of the list, I set it to be the head of the new list
+and assign the end's next pointer to the old head node.
+
+ListNode* rotateRight(ListNode* head, int k) {
+        if(!head || k == 0) return head;
+        ListNode *index = head;
+        ListNode *opt = new ListNode(0);
+        opt->next = head;
+        ListNode *end = opt;
+        int n = k % cal(head);
+        if(n == 0) return head;
+        for(int i = 0; i < n; i++){
+            if(!index){
+                break;
+            }
+            index = index->next;
+            end = end->next;
+        }
+        while(index){
+            opt = opt->next;
+            index = index->next;
+            end = end->next;
+        }
+        ListNode *begin = opt->next;
+        if(opt->next == head) return head;
+        opt->next = NULL;
+        end->next = head;
+        return begin;
+    }
+    
+    
+    
+//-------------------------------Question 10 #148 Sort List ---------------------------------//
+
+I think this is the most difficult problem among the 10 problems.
+
+"Since the question requires us to use O(nlgn) time, I can think of both merge sort and quick sort,
+however, the constant space complexity narrows it down to quick sort only." I told myself so.
+
+I was too young too simple...
+
+The difference between the array and the list in merge sort is that we don't need to assign 
+space for the result in linked list, we only need to change the links between the nodes in two 
+linked list to get a new merged list.
+
+Anyway, I didn't work out this problem, and the following code is a rewritten of other's idea
+from discuss section:
+
+ListNode* merge(ListNode* h1, ListNode* h2){
+        if(!h1) return h2;
+        if(!h2) return h1;
+        if(h1->val < h2->val){
+            h1->next = merge(h1->next, h2);
+            return h1;
+        }
+        h2->next = merge(h1, h2->next);
+        return h2;
+    }
+    ListNode* sortList(ListNode* head) {
+        if(!head || !head->next) return head;
+        ListNode *index1 = head, *index2 = head, *mid = head;
+        while(index2 && index2->next){
+            mid = index1;
+            index1 = index1->next;
+            index2 = index2->next->next;
+        }
+        mid->next = NULL;
+        return merge(sortList(head),sortList(index1));
+    }
+
+
+
+      
