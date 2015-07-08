@@ -1,1 +1,41 @@
-aaa
+Week One Report
+//-------------------------------Question 1 #206 Reverse Linked List ---------------------------------//
+
+Iterative solution(fast and less cost):
+
+The idea for this problem is quite intuitive: To reverse the linked list, I only need to change every node's next pointer to its previous one.
+Since singly-linked list only has one pointer points to the next node, I will lose the link to the rest of the list while I am changing a node's next
+pointer. To handle this problem ,at least two additional pointers:
+ListNode *sentinel = NULL; ----------- Represents the previous node of one node;
+ListNode *next = NULL;     ----------- A node's next node;
+are needed.
+
+For every node(represented by ListNode *opt) in the linked list, the operation is as follows:
+1) Assign next pointer to the node's next node: next = opt->next;
+2) Change the node's next pointer to sentinel: opt->next = sentinel;
+3) Change sentinel pointer to point at the current node which is the beginning of the new linked list.
+
+Following is the code:
+
+class Solution {
+public:
+    ListNode* reverseList(ListNode* head) {
+        if(!head) return NULL;
+        ListNode *next = NULL;
+        ListNode *sentinel = NULL;
+        ListNode *opt = head;
+        while(opt){
+            next = opt->next;
+            opt->next = sentinel;
+            sentinel = opt;
+            opt = next;
+        }
+        return sentinel;
+    }
+};
+
+
+Recursive solution:
+
+
+
