@@ -265,7 +265,7 @@ For this kind of tricky problems, we'd better remember their solutions.
 
 This problem is the same as Cracking the Coding Interview 2.4.
 
-This is a straight forward problem, just pay attention to the end of the list, if the carry is
+This is a straightforward problem, just pay attention to the end of the list, if the carry is
 1, we need to add an additional node the storage it.
 
 ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
@@ -288,5 +288,6 @@ ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
     
 //-------------------------------Question 8 #24 Swap Nodes in Pairs ---------------------------------//
 
-
+My idea is simple:
+1)  
 
