@@ -15,7 +15,7 @@ For every node(represented by ListNode *opt) in the linked list, the operation i
 2) Change the node's next pointer to sentinel: opt->next = sentinel;
 3) Change sentinel pointer to point at the current node which is the beginning of the new linked list.
 
-Following is the code:
+The code is follows:
 
 class Solution {
 public:
@@ -37,5 +37,25 @@ public:
 
 Recursive solution:
 
+The idea of the recursive solution is to reverse every node behind after the given node, then add the given node to the end of the already-reversed-list,
 
+The code is follows:
+
+ListNode* reverseList(ListNode* head) {
+        if (!head || !(head -> next)) return head;
+        ListNode* node = reverseList(head -> next);
+        head -> next -> next = head;
+        head -> next = NULL;
+        return node; 
+    }
+    
+(I didn't work out this problem using recursion, the answer is just a rewritten of other's code in discuss section)
+However, intuitively I think recursion consumes a large chunk of space in the stack, so I don't think it is the optimal solution for this problem.
+What do you think?
+
+
+
+
+
+//-------------------------------Question 2 #19 Remove Nth Node From End of List ---------------------------------//
 
