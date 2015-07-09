@@ -1,0 +1,431 @@
+Week One Report
+//-------------------------------Question 1 #206 Reverse Linked List ---------------------------------//
+
+Iterative solution(fast and less cost):
+
+The idea for this problem is quite intuitive: To reverse the linked list, I only need to change every node's next pointer to its previous one.
+Since singly-linked list only has one pointer points to the next node, I will lose the link to the rest of the list while I am changing a node's next
+pointer. To handle this problem ,at least two additional pointers:
+ListNode *sentinel = NULL; ----------- Represents the previous node of one node;
+ListNode *next = NULL;     ----------- A node's next node;
+are needed.
+
+For every node(represented by ListNode *opt) in the linked list, the operation is as follows:
+1) Assign next pointer to the node's next node: next = opt->next;
+2) Change the node's next pointer to sentinel: opt->next = sentinel;
+3) Change sentinel pointer to point at the current node which is the beginning of the new linked list.
+
+The code is follows:
+
+class Solution {
+public:
+    ListNode* reverseList(ListNode* head) {
+        if(!head) return NULL;
+        ListNode *next = NULL;
+        ListNode *sentinel = NULL;
+        ListNode *opt = head;
+        while(opt){
+            next = opt->next;
+            opt->next = sentinel;
+            sentinel = opt;
+            opt = next;
+        }
+        return sentinel;
+    }
+};
+
+
+Recursive solution:
+
+The idea of the recursive solution is to reverse every node behind after the given node, then add the given node to the end of the already-reversed-list,
+
+The code is follows:
+
+ListNode* reverseList(ListNode* head) {
+        if (!head || !(head -> next)) return head;
+        ListNode* node = reverseList(head -> next);
+        head -> next -> next = head;
+        head -> next = NULL;
+        return node; 
+    }
+    
+(I didn't work out this problem using recursion, the answer is just a rewritten of other's code in discuss section)
+However, intuitively I think recursion consumes a large chunk of space in the stack, so I don't think it is the optimal solution for this problem.
+What do you think?
+
+
+
+
+
+//-------------------------------Question 2 #19 Remove Nth Node From End of List ---------------------------------//
+
+This problem is similar to the problem in Cracking the Coding Interview 2.2.
+
+Algorithm:
+
+1) Create two pointers, index1, pointing to the beginning of the node and pre, whose next
+   is the head.
+2) Increment index1 by n positions, to make it point to the nth node from the beginning.
+3) Check for index1 != NULL if no increment index and pre, if yes, pre is the (n + 1)th node
+   to the end.
+4) Remove nth node from the end by using pre->next = pre->next->next;
+
+The code is follows:
+   
+ListNode* removeNthFromEnd(ListNode* head, int n) {
+    ListNode *index1 = head;
+    ListNode *pre = new ListNode(0);
+    ListNode *res = pre;
+    pre->next = head;
+    for(int i = 0; i < n; i++){
+        if(index1 == NULL) return NULL;
+        index1 = index1->next;
+    }
+    while(index1){
+        index1 = index1->next;
+        pre = pre->next;
+    }
+    pre->next = pre->next->next;
+    return res->next;
+}
+
+
+
+
+
+//-------------------------------Question 3 #203 Remove Linked List Elements ---------------------------------//
+
+My idea was simple at first:
+
+1) create two pointers, ListNode *todelete = head; and ListNode *predelete = new ListNode(0);
+        predelete->next = head;
+2) Go through the list, if todelete->val == val, delete the node todelete.
+Here is my code:
+
+class Solution {
+public:
+    ListNode* removeElements(ListNode* head, int val) {
+        if(!head) return NULL;
+        ListNode *todelete = head;
+        ListNode *predelete = new ListNode(0);
+        predelete->next = head;
+        ListNode *res = predelete;
+        while(todelete){
+            if(todelete->val == val){
+                predelete->next = predelete->next->next;
+                todelete = predelete->next;
+            }else{
+            if(todelete) todelete = todelete->next;
+            predelete = predelete->next;
+            }
+        }
+        return res->next;
+    }
+};
+
+
+Then I saw a more concise solution to the problem in discuss section, which is so impressive,
+I have pasted it here:
+
+    ListNode* removeElements(ListNode* head, int val) {
+        if(!head) return NULL;
+        head->next = removeElements(head->next, val);
+        return head->val == val ? head->next : head;
+    }
+    
+My concern is when I am solving the problem, I can only come up with the simple, iterative answer,
+never will I try to think about using recursion. So I think I need to do more work and figure 
+out the connection between recursion and iteration.
+
+
+
+
+//-------------------------------Question 4 #83 Remove Duplicates from Sorted List ---------------------------------//
+
+The idea is using two pointers, one represents the unique value, the other is used to check if there are duplicates.
+
+The code is follows:
+
+    ListNode* deleteDuplicates(ListNode* head) {
+        if(!head) return NULL;
+        ListNode *org = head;
+        ListNode *dup = head->next;
+        while(dup){
+            if(dup->val == org->val){
+                dup = dup->next;
+                org->next = dup;
+            }else{
+                dup = dup->next;
+                org = org->next;
+            }
+        }
+        return head;
+    }
+    
+    
+    
+//-------------------------------Question 5 #21 Merge Two Sorted Lists ---------------------------------//
+
+The idea is like merge two piles of sorted cards, we compare the top card of each pile, we take whichever is smaller and 
+insert it to the bottom of the new pile.
+
+My iterative solution is follows:
+
+
+ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
+        if(l1 == NULL && l2 == NULL){
+            return NULL;
+        }
+        if(l1 == NULL) return l2;
+        if(l2 == NULL) return l1;
+        struct ListNode *t1 = l1;
+        struct ListNode *t2 = l2;
+        struct ListNode *result = NULL;
+        if (t1->val < t2->val) {
+            result = t1;
+        }else{
+            result = t2;
+        }
+        struct ListNode *newNode = new struct ListNode(0);
+        while(t1 != NULL || t2 != NULL){
+            if(t1 == NULL){
+                newNode->next = t2;
+                t2 = t2->next;
+                newNode = newNode->next;  
+            }else if(t2 == NULL){
+                newNode->next = t1;
+                t1 = t1->next;
+                newNode = newNode->next;                
+            }else if(t1->val < t2->val){
+                newNode->next = t1;
+                t1 = t1->next;
+                newNode = newNode->next;
+            }else/* if(t1->val >= t2->val)*/{
+                newNode->next = t2;
+                t2 = t2->next;
+                newNode = newNode->next;
+            }
+        }
+        return result;
+    }
+    
+    
+My code is ugly and long, because I have checked too many redundant conditions, My thought 
+was linear so my code deals with the situations at the beginning, and as I am going through
+the list, I add additional conditions to tackle the new problems, however, I lack the ability 
+to look at this problem in a larger scale, when I look back, most of the conditions can be 
+combined together. Following is an example of a more concise solution:
+
+    ListNode* mergeTwoLists(ListNode* n1, ListNode* n2){
+        if(!n1) return n2;
+        if(!n2) return n1;
+        if(n1->val <= n2->val){
+            n1->next = mergeLists(n1->next, n2);
+            return n1;
+        }
+        if(n1->val > n2->val){
+            n2->next = mergeLists(n1, n2->next);
+            return n2;
+        }
+
+
+After comparing these two solutions, here is what is my conclusion:
+
+Most of the linked list questions can be solved by both iterative and recursive ways, 
+and recursion can always lead to a concise code.
+
+
+
+  
+//-------------------------------Question 6 #160 Intersection of Two Linked Lists ---------------------------------//  
+
+Well, there is a really tricky solution to the problem.
+
+The essence of this problem is the sum of the length of two branches plus the length of the stem(我这里也不知道用stem对不对...但是不知道别的更好地表示方法，求指教。。)
+is a constant, so any node that goes through the whole list will definitely end up meeting at the intersection.
+
+The code is follows:
+
+    ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) {
+        if(!headA || !headB) return NULL;
+        ListNode *pa = headA, *pb = headB;
+        while(pa && pb && pa != pb){
+            pa = pa->next;
+            pb = pb->next;
+            if(pa == pb) return pa;
+            if(!pa) pa = headB;
+            if(!pb) pb = headA;
+        }
+        return pa;
+    }
+
+For this kind of tricky problems, we'd better remember their solutions. 
+    
+//-------------------------------Question 7 #2 Add Two Numbers ---------------------------------//
+
+This problem is the same as Cracking the Coding Interview 2.4.
+
+This is a straightforward problem, just pay attention to the end of the list, if the carry is
+1, we need to add an additional node the storage it.
+
+ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
+        ListNode *startNode = new ListNode(0);
+        ListNode *start = startNode;
+        int addon = 0;
+        while(l1 || l2 || addon){
+            ListNode *newNode = new ListNode(0);
+            startNode->next = newNode;
+            startNode = startNode->next;
+            int sum = (l1 ? l1->val : 0) + (l2 ? l2->val : 0) + addon;
+            addon = sum / 10;
+            startNode->val = sum % 10;
+            l1 = l1 ? l1->next : NULL;
+            l2 = l2 ? l2->next : NULL;
+        }
+        return start->next;
+    }
+    
+    
+//-------------------------------Question 8 #24 Swap Nodes in Pairs ---------------------------------//
+
+My idea was simple:
+1)  Create two pointers: ListNode *a = head, *b = a->next;
+2)  Both pointers a and b travel through the list and check if b->next exists.
+3)  If b->next != NULL, assign two other pointers pointing at the nodes indicated by a and b ListNode *c = a, *d = b; 
+	and then a = b->next; b = b->next->next; 
+4)  Now if b != NULL, which means there is one more pair can be swapped, so we point c->next to b,
+	and swap the direction of nodes between c and d.
+5)  If b == NULL, which means we have reached the end of the list, we just simply point c->next to a,
+	and no more swap is needed.
+	
+My code is following:
+
+ListNode* swapPairs(ListNode* head) {
+        if(!head) return NULL;
+        ListNode *a = head, *b = a->next;
+        if(!b) return a;
+        ListNode *res = b;
+        while(b){
+            if(b->next){
+                ListNode *c = a, *d = b;
+                a = b->next;
+                b = b->next->next;
+                if(b) {
+                    c->next = b;
+                }else{
+                    c->next = a;
+                }
+                d->next = c;
+            }else{
+                a->next = NULL;
+                b->next = a;
+                break;
+            }
+        }
+        return res;
+    }
+    
+    
+
+Then in discuss section, I saw a concise recursive solution: 
+
+
+ListNode* swapPairs(ListNode* head) {
+        if (head == NULL || head->next == NULL) return head;
+        ListNode *grandChild = swapPairs(head->next->next);
+        ListNode *child = head->next;
+        child->next = head;
+        head->next = grandChild;
+        return child;
+    }
+
+And I was like: What?????!!!!! How the hell could somebody think of the idea!!! I wanna cry T_T
+
+
+
+
+//-------------------------------Question 9 #61 Rotate List ---------------------------------//
+
+I noticed that the result of the rotation is like the swap of the two parts of the list, and 
+I just need to find out where to chop the list.
+
+For example: 
+
+1->2->3->4->5->NULL and k = 2,
+The result is swap the last two nodes 4 and 5 to the front, which is:
+4->5->1->2->3->NULL
+And for this list, when k = 7, the result is the same 4->5->1->2->3->NULL,
+so the problems is quite like Question 2 #19 Remove Nth Node From End of List,
+When I find the kth node to the end of the list, I set it to be the head of the new list
+and assign the end's next pointer to the old head node.
+
+ListNode* rotateRight(ListNode* head, int k) {
+        if(!head || k == 0) return head;
+        ListNode *index = head;
+        ListNode *opt = new ListNode(0);
+        opt->next = head;
+        ListNode *end = opt;
+        int n = k % cal(head);
+        if(n == 0) return head;
+        for(int i = 0; i < n; i++){
+            if(!index){
+                break;
+            }
+            index = index->next;
+            end = end->next;
+        }
+        while(index){
+            opt = opt->next;
+            index = index->next;
+            end = end->next;
+        }
+        ListNode *begin = opt->next;
+        if(opt->next == head) return head;
+        opt->next = NULL;
+        end->next = head;
+        return begin;
+    }
+    
+    
+    
+//-------------------------------Question 10 #148 Sort List ---------------------------------//
+
+I think this is the most difficult problem among the 10 problems.
+
+"Since the question requires us to use O(nlgn) time, I can think of both merge sort and quick sort,
+however, the constant space complexity narrows it down to quick sort only." I told myself so.
+
+I was too young too simple...
+
+The difference between the array and the list in merge sort is that we don't need to assign 
+space for the result in linked list, we only need to change the links between the nodes in two 
+linked list to get a new merged list.
+
+Anyway, I didn't work out this problem, and the following code is a rewritten of other's idea
+from discuss section:
+
+ListNode* merge(ListNode* h1, ListNode* h2){
+        if(!h1) return h2;
+        if(!h2) return h1;
+        if(h1->val < h2->val){
+            h1->next = merge(h1->next, h2);
+            return h1;
+        }
+        h2->next = merge(h1, h2->next);
+        return h2;
+    }
+    ListNode* sortList(ListNode* head) {
+        if(!head || !head->next) return head;
+        ListNode *index1 = head, *index2 = head, *mid = head;
+        while(index2 && index2->next){
+            mid = index1;
+            index1 = index1->next;
+            index2 = index2->next->next;
+        }
+        mid->next = NULL;
+        return merge(sortList(head),sortList(index1));
+    }
+
+
+
+      
