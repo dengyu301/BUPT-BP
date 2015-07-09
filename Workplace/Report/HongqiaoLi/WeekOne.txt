@@ -1,0 +1,387 @@
+Question 1:Reverse Linked List#206
+一道相对简单的题目，单链表反转。
+因为单链表的特性，使得每一个节点难以找到前一个节点的位置，但是非常容易找到下一个节点的位置。
+所以要反转单链表，也就是通过将当前节点中存储的next的位置，指向前一个节点。
+思路：
+将原始list中第一个节点指向null,下一个节点指向前一个节点的位置。
+
+非递归
+1.先考虑极端情况：
+	a.链表为错误的。head == NULL
+	b.链表只有一个元素。head -> next == NULL
+2.普遍情况：
+	初始化：设置pre,cur,nex代表前一个，当前，下一个节点的地址。
+	首先，将当前节点的下一个节点 nex 的地址cur -> next，指向前一个节点的地址 pre，
+	之后，再将pre,cur递推到cur,nex就可以了。
+class Solution
+{
+public:
+    ListNode* reverseList(ListNode* head)
+    {
+        if(!head || !head -> next)
+            return head;
+        ListNode *cur = head;
+        ListNode *pre = NULL;
+        ListNode *nex = NULL;
+        while(cur)
+        {
+            nex = cur -> next;
+            cur -> next = pre;
+            pre = cur;
+            cur = nex;
+        }
+        return pre;
+    }
+};
+
+递归
+思路：
+可以将其视为先处理第一个节点，外加后面N-1个已经排序好的节点。
+class Solution
+{
+public:
+    ListNode* reverseList(ListNode* head)
+    {
+        if(!head || !head -> next)
+            return head;
+        ListNode *nex = reverseList(head -> next);
+        head -> next -> next = head;
+        head -> next = NULL;
+        return nex;
+    }
+};
+
+Question 2:Remove Nth Node From End of List#19
+本来在看题目的时候，感觉这道题还是比较简单，通过List的长度，减去n，再通过一个记数，便可找到指定的位置。
+但是，看了一下leetcode上list的类，发现它并没有一个head节点存储list的长度之类的信息。
+
+第一版
+思路：
+只能通过两遍遍历，第一遍查找list长度length，第二遍找到需要的节点。
+注意：多一个极端条件，当length == n时，需要删除head节点。
+class Solution {
+public:
+    ListNode* removeNthFromEnd(ListNode* head, int n)
+    {
+        ListNode *first = head;
+        ListNode *result = head;
+        int length = 0;
+        while(first)
+        {
+            first = first -> next;
+            length += 1;
+        }
+        if (length == 1 && n == 1)
+            return NULL;
+        ListNode *pre = head;
+        if(length == n)
+            return head -> next;
+        for (int i = 0; i < length - n; i++)
+        {
+            pre = head;
+            head = head -> next;
+        }
+        pre -> next = pre -> next -> next;
+        return result;
+    }
+};
+
+第二版 优化版：
+1.在计算length一步没必要遍历，只要通过两个指针跑就可以了。
+2.也没必要多考虑太多极端情况，在首节点前加入一个新节点即可。
+class Solution {
+public:
+    ListNode* removeNthFromEnd(ListNode* head, int n)
+    {
+        ListNode *newlist = new ListNode(0);
+        newlist -> next = head;
+        ListNode *result = newlist;
+        ListNode *pre = newlist;
+        for (int i = 0; i < n; i++)
+        {
+            head = head -> next;
+        }
+        while(head)
+        {
+            head = head -> next;
+            pre = pre -> next;
+        }
+        pre -> next = pre -> next -> next;
+        return result -> next;
+    }
+};
+
+
+Question 3:Remove Linked List Elements#203
+有了前面两道题的基础，这道题就变得非常简单了。
+思路：直接一遍遍历，找到该节点，删除。
+class Solution {
+public:
+    ListNode* removeElements(ListNode* head, int val)
+    {
+        ListNode *newlist = new ListNode(0);
+        newlist -> next = head;
+        ListNode *result = newlist;
+        while(newlist -> next)
+        {
+            if(newlist -> next -> val == val)
+                newlist -> next = newlist -> next -> next;
+            else
+                newlist = newlist -> next;
+        }
+        return result -> next;
+
+    }
+};
+
+Question 4:Remove Duplicates from Sorted List#83
+这道题也非常简单，因为给定的是sorted list。
+思路：第一个指针记录第一次出现的值的位置，第二个指针记录第一次出现的与上一个指针不同的值的位置，然后删除中间部分。
+class Solution {
+public:
+    ListNode* deleteDuplicates(ListNode* head)
+    {
+        if(!head || !head -> next)
+            return head;
+        ListNode *first = head;
+        ListNode *second = head -> next;
+        while(second)
+        {
+            if(first -> val != second -> val)
+            {
+                first -> next = second;
+                first = first -> next;
+            }
+            if (second -> next == NULL && first -> val == second -> val)
+                first -> next = NULL;
+            second = second -> next;
+        }
+        return head;
+    }
+};
+
+Question 5:Merge Two Sorted Lists#21
+这道题目一看，其实就是归并排序的简化版本。
+class Solution {
+public:
+    ListNode* mergeTwoLists(ListNode* l1, ListNode* l2)
+    {
+        if(!l1)
+            return l2;
+        if(!l2)
+            return l1;
+        ListNode *newlist = new ListNode(0);
+        ListNode *result = newlist;
+        while(l1 || l2)
+        {
+            if(!l2)
+            {
+                newlist -> next = l1;
+                l1 = l1 -> next;
+            }
+            else if(!l1)
+            {
+                newlist -> next = l2;
+                l2 = l2 -> next;
+            }
+            else if(l1 -> val < l2 -> val)
+            {
+                newlist -> next = l1;
+                l1 = l1 -> next;
+            }
+            else if(l1 -> val >= l2 -> val)
+            {
+                newlist -> next = l2;
+                l2 = l2 -> next;
+            }
+            newlist = newlist -> next;
+        }
+        return result -> next;
+    }
+};
+
+Question 6:Intersection of Two Linked Lists#160
+这一道题其实和Question 2是类似的题目，都是通过作差来进行。
+class Solution {
+public:
+    ListNode *getIntersectionNode(ListNode *headA, ListNode *headB)
+    {
+        if(!headA || !headB)
+            return NULL;
+        ListNode *tmpa = headA;
+        ListNode *tmpb = headB;
+        while(tmpa && tmpb && tmpa != tmpb)
+        {
+            tmpa = tmpa->next;
+            tmpb = tmpb->next;
+            if(tmpa == tmpb)
+                return tmpa;
+            if(!tmpa)
+                tmpa = headB;
+            if(!tmpb)
+                tmpb = headA;
+        }
+        return tmpa;
+    }
+};
+
+Question 7:Add Two Numbers#2
+这道题挺简单的，就是两个用list表示的数字进行相加，然后，再多开辟一个空间存储进位也就可以了。
+结果，遇到奇葩问题了。。。
+Input:
+[0], [0]
+Output:
+[1]
+Expected:
+[0]
+简直是颠覆三观啊，根本找不出哪引入了1，求指导。。。
+class Solution {
+public:
+    ListNode* addTwoNumbers(ListNode* l1, ListNode* l2)
+    {
+        ListNode *result = l1;
+        if(!l1)
+            return l2;
+        if(!l2)
+            return l1;
+        int carry = 0;
+        ListNode *tmp = NULL;
+        while(l1 || l2)
+        {
+            if(!l1)
+            {
+                tmp -> next = l2;
+                l2 -> val += carry;
+                return result;
+            }
+            if(!l2)
+            {
+                l1 -> val += carry;
+                return result;
+            }
+            if(l1 -> val += (l2 -> val + carry) >= 10)
+            {
+                l1 -> val %= 10;
+                carry = 1;
+            }
+            if(l1 -> val += (l2 -> val + carry) < 10)
+                carry = 0;
+            tmp = l1;
+            l1 = l1 -> next;
+            l2 = l2 -> next;
+        }
+        return result;
+
+    }
+};
+
+Question 8:Swap Nodes in Pairs#24
+这道题目也没有想象中的难。如果2个指针解决不了的，那么就3个指针，总能解决，就是稍微复杂了一些。
+注意：这道题目的边界条件非常麻烦，很容易越界。
+class Solution {
+public:
+    ListNode* swapPairs(ListNode* head)
+    {
+        if(!head || !head -> next)
+            return head;
+        ListNode *newlist = new ListNode(0);
+        newlist -> next = head;
+        ListNode *result = newlist;
+        ListNode *pre = newlist;
+        ListNode *cur = head;
+        ListNode *nex = head -> next;
+        while(cur)
+        {
+            pre -> next = nex;
+            cur -> next = nex -> next;
+            nex -> next = cur;
+            pre = cur;
+            cur = pre -> next;
+            if(!cur)
+                break;
+            nex = cur -> next;
+            if(!nex)
+                break;
+        }
+        return result -> next;
+
+    }
+};
+
+Question 9:Rotate List#61
+这道题目就是先将list首尾相连，然后按照k的大小再切开。
+注意：
+1.这是rotate list,所以，k的值，很有可能大于list的长度。这时，就应该对k %= len(list)了。
+2.注意单个节点的极端情况（最主要这里的极端情况很多，让人手忙脚乱）。
+3.特别是最后的成环的一点。开始时我都没有想到要做成环状，结果每次改变head的时候都不对，参考了discuss才写出来。。。
+class Solution {
+public:
+    ListNode* rotateRight(ListNode* head, int k)
+    {
+        if(!head || !k)
+            return head;
+        ListNode *newlist = new ListNode(0);
+        newlist -> next = head;
+        ListNode *pre = head;
+        ListNode *cur = head;
+        ListNode *count = head;
+        int length = 0;
+        while(count)
+        {
+            length += 1;
+            count = count -> next;
+        }
+        k %= length;
+        if(!k)
+            return head;
+        for(int i = 0; i < k; i++)
+            pre = pre -> next;
+        while(pre -> next)
+        {
+            head = head -> next;
+            pre = pre -> next;
+        }
+        pre -> next = newlist -> next;
+        newlist -> next = head -> next;
+        head -> next = NULL;
+        return newlist -> next;
+    }
+};
+
+Question 10:Sort List#148
+其实，一看题目，就已经知道，不外乎几种排序。
+然后，再看o(nlogn)的复杂度，也就是归并排序，快排了。
+再一看，它要用list来编写，想了想，快排非常依赖于下标操作，所以只能用归并排序了。
+但是。。。归并排序怎么写已经忘记了。看来还需要很多复习，所以，就粘贴了discuss中的，当作复习了。。。
+class Solution {
+public:
+    ListNode* merge( ListNode* head1 , ListNode * head2){
+        ListNode* d = new ListNode (0);            // dummy node
+        ListNode* e = d;
+        while(head1||head2){
+            if(head1 && (!head2 || head1->val <= head2 -> val) ){
+                e=e->next= head1 ;
+                head1 = head1 -> next;
+            }
+            if(head2 && (!head1 || head2->val < head1 -> val) ){
+                e=e->next= head2 ;
+                head2 = head2 -> next;
+            }
+        }
+        e->next = NULL;
+        return d->next;
+    }
+   ListNode* sortList(ListNode* head) {
+        if(!head || !head->next) return head;
+        ListNode* slow = head;
+        ListNode* fast =head->next;
+         while(fast && fast->next){         // to find middle node
+            fast= fast->next->next;
+            slow = slow->next;
+        }
+        ListNode* headb = slow->next;     // headb is start of 2nd half of list
+        slow->next = NULL;
+        return merge(sortList(head) , sortList(headb));
+        }
+};
+
