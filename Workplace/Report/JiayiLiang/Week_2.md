@@ -26,3 +26,26 @@ public:
     }
 };
 ```
+
+Problem 2 27-Remove Element
+--------------------------------
+```cpp
+class Solution {
+public:
+    int removeElement(vector<int>& nums, int val) {
+        int i = 0;
+        int j = -1;
+        while(i < nums.size()){
+            if(nums[i] == val){
+                nums.erase(nums.begin() + i);
+                i = j;
+                i++;
+            }else{
+                i++;
+                j++;
+            }
+        }
+        return nums.size();
+    }
+};
+```
