@@ -2,7 +2,8 @@ Week 2 Report
 ================================
 Problem 1 26-Remove Duplicates from Sorted Array
 --------------------------------
-`/*This problem is quite easy, just pay attention that once an element is erased, the indice of every
+```cpp
+/*This problem is quite easy, just pay attention that once an element is erased, the indice of every
 element in the array changes.*/
 
 class Solution {
@@ -23,4 +24,5 @@ i++;
 }
 return nums.size();
 }
-};`
+};
+```
