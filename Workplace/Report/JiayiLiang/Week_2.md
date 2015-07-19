@@ -308,3 +308,251 @@ public:
     } 
 };
 ```
+
+Problem 6 16-3Sum Closest 
+--------------------------------
+```cpp
+class Solution {
+public:
+    int threeSumClosest(vector<int>& nums, int target) {
+        int closet = 0;
+        int sum = 0;
+        if(nums.size() <= 3) return accumulate(nums.begin(),nums.end(),0);
+        sort(nums.begin(),nums.end());
+        int answer = nums[0] + nums[1] + nums[2];
+        /*Computes the sum of the given value init and the elements in the range [first, 	last). 
+          first, last	-	the range of elements to sum
+          init	-	initial value of the sum.*/
+        for(int first = 0; first < nums.size() - 2; first++){
+            int second = first + 1;
+            int third = nums.size() - 1;
+            while(second < third){
+                sum = nums[first] + nums[second] + nums[third];
+                if(sum == target) return sum;
+                if(sum > target){
+                    third--;
+                }else if(sum < target){
+                    second++;
+                }
+                if(abs(target-sum) < abs(target-answer)) answer = sum;
+            }
+        }
+        return answer;
+    }
+};
+```
+
+Problem 7 11-Container With Most Water 
+--------------------------------
+```cpp
+/*This is a rewritten of other's idea, I can only work out O(n^2) solution*/
+
+
+class Solution {
+public:
+    int maxArea(vector<int>& height) {
+        int start = 0, end = height.size() - 1;
+        int answer = 0, contain = 0;
+        while(start < end){
+            answer = max(answer, (end-start) * min(height[start], height[end]) );
+            height[start] > height[end] ? end-- : start++;
+        }
+        return answer;
+    }
+};
+```
+
+//--------this is the original idea----------------//
+
+The O(n) solution with proof by contradiction doesn't look intuitive enough to me. Before moving on, read the algorithm first if you don't know it yet.
+
+Here's another way to see what happens in a matrix representation:
+
+Draw a matrix where the row is the first line, and the column is the second line. For example, say n=6.
+
+In the figures below, x means we don't need to compute the volume for that case: (1) On the diagonal, the two lines are overlapped; (2) The lower left triangle area of the matrix is symmetric to the upper right area.
+
+We start by computing the volume at (1,6), denoted by o. Now if the left line is shorter than the right line, then all the elements left to (1,6) on the first row have smaller volume, so we don't need to compute those cases (crossed by ---).
+
+  1 2 3 4 5 6
+1 x ------- o
+2 x x
+3 x x x 
+4 x x x x
+5 x x x x x
+6 x x x x x x
+Next we move the left line and compute (2,6). Now if the right line is shorter, all cases below (2,6) are eliminated.
+
+  1 2 3 4 5 6
+1 x ------- o
+2 x x       o
+3 x x x     |
+4 x x x x   |
+5 x x x x x |
+6 x x x x x x
+And no matter how this o path goes, we end up only need to find the max value on this path, which contains n-1 cases.
+
+  1 2 3 4 5 6
+1 x ------- o
+2 x x - o o o
+3 x x x o | |
+4 x x x x | |
+5 x x x x x |
+6 x x x x x x
+
+Problem 8 64-Minimum Path Sum
+--------------------------------
+// My basic version 1.0
+```cpp
+int minPathSum(vector<vector<int>>& grid) {
+    vector<vector<int>> cgrid(grid.size(),vector<int>(grid[0].size(),0));
+    if(grid.size() == 0) return 0;
+    cgrid[0][0] = grid[0][0];
+    for(int i = 0; i < cgrid.size(); i++){
+        for(int j = 0; j < cgrid[0].size(); j++){
+            if(i==0 && j==0) continue;
+            if(j-1 < 0 ){
+                cgrid[i][j] = cgrid[i-1][j] + grid[i][j];
+            }
+            if(i-1 < 0 ){
+                cgrid[i][j] = cgrid[i][j-1] + grid[i][j];
+            }
+            else if(j-1 >= 0 && i-1 >= 0){
+                cgrid[i][j] = min(cgrid[i-1][j] + grid[i][j], cgrid[i][j-1] + grid[i][j]);
+            }
+        }
+    }
+    return cgrid[grid.size()-1][grid[0].size()-1];
+}
+```
+
+
+//Follwoing is someone's complete solution.
+
+
+
+
+
+This is a typical DP problem. Suppose the minimum path sum of arriving at point (i, j) is S[i][j], then the state equation is S[i][j] = min(S[i - 1][j], S[i][j - 1]) + grid[i][j].
+
+Well, some boundary conditions need to be handled. The boundary conditions happen on the topmost row (S[i - 1][j] does not exist) and the leftmost column (S[i][j - 1] does not exist). Suppose grid is like [1, 1, 1, 1], then the minimum sum to arrive at each point is simply an accumulation of previous points and the result is [1, 2, 3, 4].
+
+Now we can write down the following (unoptimized) code.
+```cpp
+class Solution {
+public:
+    int minPathSum(vector<vector<int>>& grid) {
+        int m = grid.size();
+        int n = grid[0].size(); 
+        vector<vector<int> > sum(m, vector<int>(n, grid[0][0]));
+        for (int i = 1; i < m; i++)
+            sum[i][0] = sum[i - 1][0] + grid[i][0];
+        for (int j = 1; j < n; j++)
+            sum[0][j] = sum[0][j - 1] + grid[0][j];
+        for (int i = 1; i < m; i++)
+            for (int j = 1; j < n; j++)
+                sum[i][j]  = min(sum[i - 1][j], sum[i][j - 1]) + grid[i][j];
+        return sum[m - 1][n - 1];
+    }
+};
+```
+As can be seen, each time when we update sum[i][j], we only need sum[i - 1][j] (at the current column) and sum[i][j - 1] (at the left column). So we need not maintain the full m*n matrix. Maintaining two columns is enough and now we have the following code.
+```cpp
+class Solution {
+public:
+    int minPathSum(vector<vector<int>>& grid) {
+        int m = grid.size();
+        int n = grid[0].size();
+        vector<int> pre(m, grid[0][0]);
+        vector<int> cur(m, 0);
+        for (int i = 1; i < m; i++)
+            pre[i] = pre[i - 1] + grid[i][0];
+        for (int j = 1; j < n; j++) { 
+            cur[0] = pre[0] + grid[0][j]; 
+            for (int i = 1; i < m; i++)
+                cur[i] = min(cur[i - 1], pre[i]) + grid[i][j];
+            swap(pre, cur); 
+        }
+        return pre[m - 1];
+    }
+};
+```
+Further inspecting the above code, it can be seen that maintaining pre is for recovering pre[i], which is simply cur[i] before its update. So it is enough to use only one vector. Now the space is further optimized and the code also gets shorter.
+```cpp
+class Solution {
+public:
+    int minPathSum(vector<vector<int>>& grid) {
+        int m = grid.size();
+        int n = grid[0].size();
+        vector<int> cur(m, grid[0][0]);
+        for (int i = 1; i < m; i++)
+            cur[i] = cur[i - 1] + grid[i][0]; 
+        for (int j = 1; j < n; j++) {
+            cur[0] += grid[0][j]; 
+            for (int i = 1; i < m; i++)
+                cur[i] = min(cur[i - 1], cur[i]) + grid[i][j];
+        }
+        return cur[m - 1];
+    }
+};
+```
+Problem 9 78-Subsets
+--------------------------------
+```cpp
+/*This problem requires the understanding of the subset
+basically used dynamic idea, subset of ith is subset of (i-1)th append each element of subset of (i-1)th with S[i] in its tail.
+
+for example {1,2,3,4}
+
+subset of {1,2,3} is {1,2,3,12,13,23,123}
+
+subset of {1,2,3,4} is {1,2,3,12,13,23,123} + {1 4,2 4,3 4,12 4,13 4,23 4,123 4} + {4}
+
+*/
+
+class Solution {
+public:
+    vector<vector<int>> subsets(vector<int>& nums) {
+        vector<vector<int>> result(1,vector<int>());
+        sort(nums.begin(),nums.end());
+        /*Make sure it is acceding order*/
+        for(int i = 0; i < nums.size(); i++){
+            int n = result.size();
+            /*dynamic programming, for every element in the result, copy and paste back to the 
+              result, and add new element from nums the the back to form the new element in the result*/
+            for(int j = 0; j < n; j++){
+                result.push_back(result[j]);
+                result.back().push_back(nums[i]);
+            }
+        }
+        return result;
+    }
+};
+```
+
+Problem 10 121-Best Time to Buy and Sell Stock
+--------------------------------
+// This is inspired by other's idea,
+// At first I was confused by how to implement DP in the answer
+// Then I realized others didn't try to use dp on purpose.
+// So I just need to find the longest ascending slope, then I am done.
+
+
+```cpp
+
+
+
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        if(prices.size() <= 1) return 0;
+        int maxmoney = 0, current = 0;
+        for(int i = 1; i < prices.size(); i++){
+            current = current + prices[i] - prices[i-1];
+            if(current < 0) current = 0;
+            maxmoney = max(current,maxmoney);
+        }
+        return maxmoney;
+    }
+};
+```
