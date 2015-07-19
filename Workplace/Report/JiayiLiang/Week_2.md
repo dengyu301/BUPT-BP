@@ -374,31 +374,31 @@ In the figures below, x means we don't need to compute the volume for that case:
 
 We start by computing the volume at (1,6), denoted by o. Now if the left line is shorter than the right line, then all the elements left to (1,6) on the first row have smaller volume, so we don't need to compute those cases (crossed by ---).
 
-  1 2 3 4 5 6
-1 x ------- o
-2 x x
-3 x x x 
-4 x x x x
-5 x x x x x
-6 x x x x x x
+        1 2 3 4 5 6
+        1 x ------- o
+        2 x x
+        3 x x x 
+        4 x x x x
+        5 x x x x x
+        6 x x x x x x
 Next we move the left line and compute (2,6). Now if the right line is shorter, all cases below (2,6) are eliminated.
 
-  1 2 3 4 5 6
-1 x ------- o
-2 x x       o
-3 x x x     |
-4 x x x x   |
-5 x x x x x |
-6 x x x x x x
+        1 2 3 4 5 6
+        1 x ------- o
+        2 x x       o
+        3 x x x     |
+        4 x x x x   |
+        5 x x x x x |
+        6 x x x x x x
 And no matter how this o path goes, we end up only need to find the max value on this path, which contains n-1 cases.
 
-  1 2 3 4 5 6
-1 x ------- o
-2 x x - o o o
-3 x x x o | |
-4 x x x x | |
-5 x x x x x |
-6 x x x x x x
+        1 2 3 4 5 6
+        1 x ------- o
+        2 x x - o o o
+        3 x x x o | |
+        4 x x x x | |
+        5 x x x x x |
+        6 x x x x x x
 
 Problem 8 64-Minimum Path Sum
 --------------------------------
