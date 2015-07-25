@@ -231,7 +231,8 @@ public:
     bool search(vector<int>& nums, int target) {
         return binarysearch(0, nums.size()/2-1, nums,target) || binarysearch(nums.size()/2, nums.size()-1, nums, target); 
     }
-};```
+};
+```
 
 Problem 10 31-Next Permutation
 --------------------------------
