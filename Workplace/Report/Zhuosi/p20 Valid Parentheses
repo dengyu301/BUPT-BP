@@ -1,0 +1,96 @@
+P20 Valid Parentheses
+Problem description: 
+
+Given a string containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.
+
+The brackets must close in the correct order, "()" and "()[]{}" are all valid but "(]" and "([)]" are not.
+
+Tags: Stack, String
+
+
+
+Thoughts:
+
+This is a stack related problem because the input string has has order ( the problem mentioned that “the brackets must close in the correct order” ). These feature matches stack’s feature which is “last in, first out”.
+
+first version: 
+public class Solution {
+    public boolean isValid(String s) {
+         Stack st = new Stack();
+
+        for(int p = 0; p < s.length(); p++){
+            
+            if( s.charAt(p) == '(' || s.charAt(p) == '{' || s.charAt(p) == '[' ){
+                st.push(s.charAt(p));
+                continue;
+            }
+            
+         	if( (s.charAt(p) == ')' && (Character)st.peek() == '(') || (s.charAt(p) == '}' && (Character)st.peek() == '{') || (s.charAt(p) == ']' && (Character)st.peek() == '[') ){
+         	   st.pop();
+         	}else{
+         	   return false;
+         	}
+         
+        }
+         
+        if(st.empty() == false){
+             return false;
+        }
+         
+        return true;    //handle the extreme case where st == null
+    }
+}
+
+error: 
+java.util.EmptyStackExeption the last executed input is “]”.
+
+Then I realize that every time before I compare the peek and input char, I should make sure the stack is not empty.
+
+correct version:
+
+public class Solution {
+
+    public boolean isValid(String s) {
+
+         Stack st = new Stack();
+
+
+
+        for(int p = 0; p < s.length(); p++){
+
+            if( s.charAt(p) == '(' || s.charAt(p) == '{' || s.charAt(p) == '[' ){
+
+                st.push(s.charAt(p));
+
+                continue;
+
+            }else if( st.empty() ){
+
+                return false;
+
+            }            
+
+         	if( (s.charAt(p) == ')' && (Character)st.peek() == '(') || (s.charAt(p) == '}' && (Character)st.peek() == '{') || (s.charAt(p) == ']' && (Character)st.peek() == '[') ){
+
+         	    st.pop();
+
+         	}else{
+
+         	    return false;
+
+         	}
+
+         }
+
+         if(st.empty() == false){
+
+             return false;
+
+         }
+
+         return true;    //handle the extreme case where st == null
+
+    }
+
+}
+
